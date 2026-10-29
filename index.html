@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#111e20" />
+    <title>QOLDA Vision · Hand Motion Lab</title>
+    <meta
+      name="description"
+      content="A browser-local hand motion research prototype: live landmarks, exercise counting and a teachable gesture classifier."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#"
+        ><span class="brand-mark">q<span>·</span></span>
+        <div>QOLDA<span>VISION LAB</span></div></a
+      >
+      <div class="workspace-label">RESEARCH WORKSPACE</div>
+      <nav aria-label="Workspace">
+        <button class="nav active" data-tab="motion">
+          <span>◈</span> Motion studio <small>01</small></button
+        ><button class="nav" data-tab="learn">
+          <span>⌘</span> Gesture learning <small>02</small></button
+        ><button class="nav" data-tab="method">
+          <span>≋</span> Method & evidence <small>03</small>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <span class="privacy-icon">◇</span
+        ><strong>Your camera. Your data.</strong>
+        <p>Video stays in your browser.<br />No account. No upload.</p>
+        <span class="source-note">Source included in this release</span>
+        <div class="version">RESEARCH PROTOTYPE <span>v0.3</span></div>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <span><i class="dot"></i> HUMAN MOVEMENT × MACHINE LEARNING</span>
+        <div class="author">A project by <strong>Aibol Namiyash</strong></div>
+      </header>
+      <section class="page-heading">
+        <div class="eyebrow">COMPUTER VISION / HUMAN–COMPUTER INTERACTION</div>
+        <div class="heading-row">
+          <div>
+            <h1>Small movements.<br /><em>Measurable progress.</em></h1>
+            <p>
+              A hand motion lab, built around a camera.<br />Observe movement.
+              Teach gestures. Test what the model learns.
+            </p>
+          </div>
+          <div class="research-tag">
+            <span>21</span>
+            <div>hand landmarks<br /><b>One accessible interface.</b></div>
+          </div>
+        </div>
+      </section>
+      <div id="notice" role="status" aria-live="polite">
+        Ready. Start the camera or explore a clearly labeled simulation.
+      </div>
+      <section id="motion" class="tab active">
+        <div class="section-title">
+          <h2>Motion studio</h2>
+          <span id="sourceBadge" class="badge">NO INPUT</span>
+        </div>
+        <div class="studio-grid">
+          <div class="viewer card">
+            <div class="viewer-top">
+              <span
+                ><i class="dot"></i>
+                <b id="trackingLabel">Awaiting input</b></span
+              ><span id="fps">— FPS</span>
+            </div>
+            <div class="canvas-wrap">
+              <video
+                id="video"
+                playsinline
+                muted
+                aria-label="Camera preview"
+              ></video
+              ><canvas
+                id="skeleton"
+                width="960"
+                height="700"
+                aria-label="Hand landmark visualization"
+              ></canvas>
+              <div id="emptyState">
+                <div class="hand-icon">✋</div>
+                <h3>A little movement goes a long way.</h3>
+                <p>
+                  Place one hand in view to begin.<br />No glove or wearable
+                  needed.
+                </p>
+                <button class="primary" id="heroCamera">Enable camera ↗</button
+                ><button class="text-button" id="heroDemo">
+                  Explore simulation →
+                </button>
+              </div>
+              <div class="viewer-overlay">
+                <span id="gesture">—</span
+                ><span id="modelBadge">GEOMETRY BASELINE</span>
+              </div>
+            </div>
+            <div class="viewer-footer">
+              <span id="inputDetail">Camera is off</span
+              ><span>LOCAL PROCESSING <i class="dot"></i></span>
+            </div>
+          </div>
+          <div class="session-panel">
+            <div class="card session-card">
+              <div class="eyebrow">OPEN → CLOSE EXERCISE</div>
+              <h3>Every cycle counts.</h3>
+              <p>
+                Fully open your hand, then close it.<br />Move at your own
+                comfortable pace.
+              </p>
+              <div class="rep-row">
+                <strong id="reps">0</strong><span>completed<br />cycles</span
+                ><svg viewBox="0 0 80 80" aria-hidden="true">
+                  <circle cx="40" cy="40" r="32" />
+                  <circle id="repArc" cx="40" cy="40" r="32" />
+                </svg>
+              </div>
+              <div class="phase">
+                <span id="phase">Open your hand first</span
+                ><span id="timer">00:00</span>
+              </div>
+              <button class="primary wide" id="sessionButton">
+                Start session <span>→</span></button
+              ><button class="text-button wide" id="resetSession">
+                Reset session
+              </button>
+            </div>
+            <div class="card calibration-card">
+              <div>
+                <h3>Make it personal.</h3>
+                <span class="badge" id="calBadge">UNCALIBRATED</span>
+              </div>
+              <p>
+                Set your comfortable closed and open positions to normalize the
+                movement range.
+              </p>
+              <div class="split">
+                <button class="secondary" id="calClosed">Set closed</button
+                ><button class="secondary" id="calOpen">Set open</button>
+              </div>
+              <small
+                >Each action samples 1 second. Calibration is a motion
+                reference, not a clinical measurement.</small
+              >
+            </div>
+          </div>
+        </div>
+        <div class="metric-grid">
+          <div class="card metric">
+            <span>HAND OPENNESS</span>
+            <div><strong id="openMetric">—</strong><small>/ 100</small></div>
+            <p>Normalized geometric extension</p>
+            <div class="meter"><i id="openBar"></i></div>
+          </div>
+          <div class="card metric">
+            <span>THUMB–INDEX DISTANCE</span>
+            <div><strong id="pinchMetric">—</strong><small>× palm</small></div>
+            <p>Distance relative to palm length</p>
+            <div class="meter"><i id="pinchBar"></i></div>
+          </div>
+          <div class="card metric">
+            <span>SESSION RANGE</span>
+            <div><strong id="rangeMetric">—</strong><small>points</small></div>
+            <p>Observed openness span this session</p>
+            <div class="range-caption">Experimental movement descriptor</div>
+          </div>
+        </div>
+        <div class="analysis-grid">
+          <div class="card chart-card">
+            <div class="card-heading">
+              <div>
+                <h3>Movement, over time.</h3>
+                <p>Hand openness · last 20 seconds</p>
+              </div>
+              <span class="legend"
+                ><i class="dot"></i> <span id="chartSource">No data</span></span
+              >
+            </div>
+            <canvas
+              id="timeline"
+              width="1000"
+              height="230"
+              aria-label="Timeline of hand openness"
+            ></canvas>
+            <div class="chart-axis">
+              <span>−20s</span><span>−10s</span><span>now</span>
+            </div>
+          </div>
+          <div class="card fingers-card">
+            <h3>A closer look.</h3>
+            <p>Geometric extension per finger</p>
+            <div id="fingerBars"></div>
+          </div>
+        </div>
+        <div class="bottom-actions">
+          <div class="input-controls">
+            <button class="secondary" id="cameraButton">Enable camera</button
+            ><button class="secondary" id="demoButton">Run simulation</button
+            ><button class="secondary" id="stopInput">Stop input</button>
+          </div>
+          <button class="text-button" id="exportSession">
+            Export session CSV ↓
+          </button>
+        </div>
+        <p class="footnote">
+          Research prototype. Not a medical device. No diagnosis or treatment
+          recommendations. Simulation values are synthetic and never enter model
+          evaluation.
+        </p>
+      </section>
+      <section id="learn" class="tab">
+        <div class="section-title">
+          <h2>Teach your own gestures.</h2>
+          <span class="badge">BROWSER-LOCAL LEARNING</span>
+        </div>
+        <div class="learn-intro card">
+          <div>
+            <div class="eyebrow">FROM LANDMARKS TO YOUR OWN MODEL</div>
+            <h3>Collect. Compare. Question.</h3>
+            <p>
+              Record labeled examples with your camera. A k-nearest-neighbor
+              classifier learns your gestures from six geometric features.
+              Evaluate on whole held-out capture sessions, not randomly mixed
+              frames.
+            </p>
+          </div>
+          <div class="steps">
+            <span>01 <b>Record all classes</b></span
+            ><span>02 <b>Begin a new session</b></span
+            ><span>03 <b>Repeat, then evaluate</b></span>
+          </div>
+        </div>
+        <div class="learn-grid">
+          <div class="card collect-card">
+            <div class="card-heading">
+              <h3>Build a small dataset</h3>
+              <span class="badge" id="groupBadge">SESSION 1</span>
+            </div>
+            <label for="classSelect">Gesture label</label
+            ><select id="classSelect">
+              <option>Open palm</option>
+              <option>Fist</option>
+              <option>Pinch</option>
+              <option>Point</option></select
+            ><button class="primary wide" id="captureButton">
+              Record 3 seconds →
+            </button>
+            <p id="captureStatus">
+              Camera input is required. Simulation cannot be recorded as real
+              data.
+            </p>
+            <div id="classCounts"></div>
+            <div class="split">
+              <button class="secondary" id="newGroup">New session</button
+              ><button class="secondary" id="clearDataset">
+                Clear dataset
+              </button>
+            </div>
+            <p class="hint">
+              For a meaningful session split, change the hand position or
+              lighting between sessions. For person-level evaluation, use a
+              distinct session for each consenting participant.
+            </p>
+          </div>
+          <div class="card eval-card">
+            <div class="card-heading">
+              <h3>Evidence, not assumptions.</h3>
+              <span class="badge" id="sampleBadge">0 SAMPLES</span>
+            </div>
+            <div id="evalEmpty">
+              <div class="eval-icon">↗</div>
+              <h3>No results yet. That's honest.</h3>
+              <p>
+                Record at least two classes in two independent sessions. Every
+                class must occur in at least two sessions.
+              </p>
+            </div>
+            <div id="evaluation" hidden></div>
+            <button class="secondary wide" id="evaluateButton">
+              Run held-out-session evaluation</button
+            ><button class="text-button wide" id="exportDataset">
+              Export labeled CSV ↓
+            </button>
+            <div class="split">
+              <button class="secondary" id="saveDataset">
+                Save dataset JSON</button
+              ><button class="secondary" id="loadDataset">
+                Import JSON (replace)
+              </button>
+            </div>
+            <input
+              id="datasetFile"
+              type="file"
+              accept=".json,application/json"
+              hidden
+            /><button class="text-button wide" id="saveReport">
+              Download evaluation report ↓
+            </button>
+          </div>
+        </div>
+        <div class="card privacy-card">
+          <span>◇</span>
+          <div>
+            <h3>You decide what leaves the browser.</h3>
+            <p>
+              Examples live in this tab's memory. Save dataset JSON to restore
+              them after a reload. CSV exports contain numerical features and
+              labels, not camera images. kNN vote agreement is shown during
+              inference; it is not a calibrated probability.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="method" class="tab">
+        <div class="section-title">
+          <h2>Make the work inspectable.</h2>
+          <span class="badge">METHOD & LIMITATIONS</span>
+        </div>
+        <div class="method-grid">
+          <article class="card">
+            <div class="eyebrow">01 / THE PIPELINE</div>
+            <h3>A transparent stack.</h3>
+            <ol>
+              <li>
+                <b>Pretrained perception.</b> Google's MediaPipe Hand Landmarker
+                locates 21 hand points. No claim of training this model.
+              </li>
+              <li>
+                <b>Geometry.</b> Mean adjacent-joint angles estimate extension.
+                Thumb–index distance is normalized by wrist-to-middle-MCP
+                length.
+              </li>
+              <li>
+                <b>Temporal logic.</b> A dwell-based state machine counts
+                open-to-closed cycles with hysteresis.
+              </li>
+              <li>
+                <b>Personal learning.</b> A kNN classifier (k=5) learns labeled
+                six-dimensional examples collected here.
+              </li>
+              <li>
+                <b>Evaluation.</b> Leave-one-session-out predictions are
+                compared with a nearest-centroid baseline.
+              </li>
+            </ol>
+          </article>
+          <article class="card">
+            <div class="eyebrow">02 / WHAT THE NUMBERS MEAN</div>
+            <h3>Useful descriptors. Limited claims.</h3>
+            <p>
+              Openness is a geometric proxy, not a joint-angle measurement or a
+              clinical assessment. World landmarks are used when available;
+              screen landmarks are a fallback.
+            </p>
+            <p>
+              The cycle counter requires a stable open state followed by a
+              stable closed state. Tracking loss resets its pending state to
+              avoid phantom repetitions.
+            </p>
+            <p>
+              Calibration maps your comfortable extremes to 0–100. Without it,
+              the interface uses documented geometric defaults. The chart and
+              session export preserve whether input was simulated or
+              camera-derived.
+            </p>
+          </article>
+          <article class="card">
+            <div class="eyebrow">03 / EVALUATION PROTOCOL</div>
+            <h3>Keep sessions apart.</h3>
+            <p>
+              Adjacent video frames are highly correlated. Random frame
+              splitting can inflate accuracy. Every test session is excluded
+              entirely from its training fold.
+            </p>
+            <p>
+              Report macro F1, accuracy, a confusion matrix and the centroid
+              baseline. Results remain estimates on your own small dataset; they
+              do not establish performance on new people.
+            </p>
+            <p>
+              A stronger follow-up: collect multiple participants and hold out
+              each participant entirely, then repeat under changed lighting and
+              backgrounds.
+            </p>
+          </article>
+          <article class="card">
+            <div class="eyebrow">04 / KNOWN FAILURE MODES</div>
+            <h3>Show where it breaks.</h3>
+            <p>
+              Occluded fingers, motion blur, partial hands, side views and poor
+              lighting can degrade tracking. Unusual hand postures may fall
+              outside the pretrained model's coverage.
+            </p>
+            <p>
+              By default the classifier picks a known class. Optional held-session distance rejection can reject unfamiliar inputs, but has not been validated on webcam data. Vote agreement is not proof of
+              correctness. No patient study or therapeutic benefit has been
+              established.
+            </p>
+            <a
+              href="https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker/web_js"
+              target="_blank"
+              rel="noopener"
+              >MediaPipe documentation ↗</a
+            >
+          </article>
+        </div>
+        <div class="card project-note">
+          <div>
+            <div class="eyebrow">QOLDA / ACCESSIBLE MOVEMENT TECHNOLOGY</div>
+            <h3>A continuation of a hardware idea.</h3>
+            <p>
+              This software prototype explores camera-based motion interaction
+              alongside the original QOLDA glove project. Its contribution is
+              the accessible interface, temporal analysis, personal gesture
+              learning and reproducible evaluation workflow.
+            </p>
+          </div>
+          <span class="source-note">Source code included in this release</span>
+        </div>
+      </section>
+      <footer>
+        <strong>QOLDA VISION</strong
+        ><span>Built to observe. Designed to be questioned.</span
+        ><span>RESEARCH PROTOTYPE · 2026</span>
+      </footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
