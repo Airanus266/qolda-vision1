@@ -1,0 +1,79 @@
+Finished held-out participant 0
+Finished held-out participant 1
+Finished held-out participant 2
+Finished held-out participant 4
+Finished held-out participant 5
+Finished held-out participant 6
+Finished held-out participant 7
+Finished held-out participant 8
+Finished held-out participant 9
+Finished held-out participant 10
+Finished held-out participant 11
+Finished held-out participant 12
+Finished held-out participant 13
+Finished held-out participant 14
+[
+  {
+    "variant": "full",
+    "model": "centroid",
+    "accuracy_mean": 0.7552857142857142,
+    "accuracy_sd": 0.1621151778561492,
+    "macro_f1_mean": 0.7120681053526934
+  },
+  {
+    "variant": "full",
+    "model": "knn",
+    "accuracy_mean": 0.802142857142857,
+    "accuracy_sd": 0.14873786465104433,
+    "macro_f1_mean": 0.7738687736253739
+  },
+  {
+    "variant": "full",
+    "model": "mlp",
+    "accuracy_mean": 0.8683333333333334,
+    "accuracy_sd": 0.15280639669789636,
+    "macro_f1_mean": 0.8468282222381046
+  },
+  {
+    "variant": "no_count",
+    "model": "centroid",
+    "accuracy_mean": 0.7543809523809523,
+    "accuracy_sd": 0.15426134208077427,
+    "macro_f1_mean": 0.7118021565556402
+  },
+  {
+    "variant": "no_count",
+    "model": "knn",
+    "accuracy_mean": 0.767095238095238,
+    "accuracy_sd": 0.12947166990856843,
+    "macro_f1_mean": 0.7306812261006917
+  },
+  {
+    "variant": "no_count",
+    "model": "mlp",
+    "accuracy_mean": 0.8008571428571428,
+    "accuracy_sd": 0.1460889387393105,
+    "macro_f1_mean": 0.7639668050269549
+  },
+  {
+    "variant": "no_pair_distances",
+    "model": "centroid",
+    "accuracy_mean": 0.7792857142857142,
+    "accuracy_sd": 0.1945297137298298,
+    "macro_f1_mean": 0.7447343147387446
+  },
+  {
+    "variant": "no_pair_distances",
+    "model": "knn",
+    "accuracy_mean": 0.7888571428571429,
+    "accuracy_sd": 0.13513207937673005,
+    "macro_f1_mean": 0.7641519052177879
+  },
+  {
+    "variant": "no_pair_distances",
+    "model": "mlp",
+    "accuracy_mean": 0.8725238095238096,
+    "accuracy_sd": 0.11831182283984734,
+    "macro_f1_mean": 0.8507293964446363
+  }
+]
